@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
 
-                    convertedImage = getResizedBitmap(bitmap, 100);
+                    convertedImage = getResizedBitmap(bitmap, 140);
 //                    System.out.println(converetdImage);
                 } catch (Exception e) {
                     //handle exception
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 //                }
 //                int bitmapByteCount= BitmapCompat.getAllocationByteCount(bitmap);
                 textView.setText(convertedImage.getByteCount() / 1024 + " kb");
-                imageView.setImageURI(uri);
+                imageView.setImageBitmap(convertedImage);
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception exception = result.getError();
