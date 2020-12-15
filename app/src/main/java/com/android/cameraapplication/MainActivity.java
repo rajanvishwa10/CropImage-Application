@@ -10,6 +10,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -34,6 +35,7 @@ import android.widget.Toast;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageView;
     Uri imageUri;
     TextView textView;
-    File f;
     Bitmap bitmap, convertedImage;
 
     @Override
@@ -61,14 +62,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void clickImage(View view) {
         CropImage.activity().start(MainActivity.this);
-//    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//    startActivityForResult(intent,0);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        int dataSize = 0;
         if (requestCode == 0
                 && resultCode == Activity.RESULT_OK) {
 
@@ -85,36 +83,18 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
 
-                    convertedImage = getResizedBitmap(bitmap, 140);
-//                    System.out.println(converetdImage);
+                    convertedImage = getResizedBitmap(bitmap, 550);
+                    imageView.setImageBitmap(convertedImage);
                 } catch (Exception e) {
-                    //handle exception
+                    e.printStackTrace();
                 }
-//                Bitmap bitmap = result.getBitmap();
-                System.out.println(uri);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+                Bitmap bitmap = drawable.getBitmap();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                byte[] bitmapdata = bos.toByteArray();
+                textView.setText(bitmapdata.length / 1024 + " kb");
 
-//                String scheme = uri.getScheme();
-//                if (scheme.equals(ContentResolver.SCHEME_CONTENT)) {
-//                    try {
-//                        InputStream fileInputStream = getApplicationContext().getContentResolver().openInputStream(uri);
-//                        dataSize = fileInputStream.available();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    System.out.println("File size in bytes" + dataSize);
-//
-//                } else if (scheme.equals(ContentResolver.SCHEME_FILE)) {
-//                    String path = bitmap..getPath();
-//                    try {
-//                        f = new File(path);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-                System.out.println("File size in bytes " + convertedImage.getByteCount());
-//                }
-//                int bitmapByteCount= BitmapCompat.getAllocationByteCount(bitmap);
-                textView.setText(convertedImage.getByteCount() / 1024 + " kb");
-                imageView.setImageBitmap(convertedImage);
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception exception = result.getError();
@@ -126,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
 
     private Bitmap getResizedBitmap(Bitmap image, int maxSize) {
         int width = image.getWidth();
+        System.out.println(width);
         int height = image.getHeight();
+        System.out.println(height);
 
         float bitmapRatio = (float) width / (float) height;
         if (bitmapRatio > 1) {
