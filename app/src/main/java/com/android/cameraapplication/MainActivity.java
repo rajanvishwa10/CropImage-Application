@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
 
-                    convertedImage = getResizedBitmap(bitmap, 550);
+                    convertedImage = getResizedBitmap(bitmap, 600);
                     imageView.setImageBitmap(convertedImage);
                 } catch (Exception e) {
                     e.printStackTrace();
